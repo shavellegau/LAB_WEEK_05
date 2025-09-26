@@ -60,12 +60,22 @@ class MainActivity : AppCompatActivity() {
             ) {
                 if (response.isSuccessful) {
                     val image = response.body()
-                    val firstImage = image?.firstOrNull()?.imageUrl.orEmpty()
+                    val firstImage = image?.firstOrNull()
 
-                    apiResponseView.text = getString(R.string.image_placeholder, firstImage)
+                    // ✅ Ambil nama breed kalau ada
+                    val breedName = if (!firstImage?.breeds.isNullOrEmpty()) {
+                        firstImage?.breeds?.firstOrNull()?.name ?: "Unknown"
+                    } else {
+                        "Unknown"
+                    }
 
-                    if (firstImage.isNotBlank()) {
-                        imageLoader.loadImage(firstImage, imageResultView)
+                    // Tampilkan nama breed di TextView
+                    apiResponseView.text = getString(R.string.breed_placeholder, breedName)
+
+                    // Tampilkan gambar
+                    val imageUrl = firstImage?.imageUrl.orEmpty()
+                    if (imageUrl.isNotBlank()) {
+                        imageLoader.loadImage(imageUrl, imageResultView)
                     } else {
                         Log.d(MAIN_ACTIVITY, "Missing image URL")
                     }
